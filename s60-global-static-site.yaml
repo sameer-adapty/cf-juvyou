@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 bucekt for static assets/cdn
+Resources:
+
+  s3bucketglobalstatic:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: Private
+      # need something long and globally unique.
+      BucketName: "images.somethingweird.tech"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              # has to be AES256 - kms can not be used for bucket with distribution
+              SSEAlgorithm: 'AES256'
+
+      # no access to public what-so-ever.      
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls : true
+        BlockPublicPolicy : true
+        IgnorePublicAcls : true
+        RestrictPublicBuckets : true
+
+  CloudFrontOriginIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: 'origin identity'
+
+  BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: images.somethingweird.tech
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginIdentity}'
+              Action: 's3:GetObject'
+              Resource: arn:aws:s3:::images.somethingweird.tech/*
+      DependsOn:
+        - "publicDistribution"
+  
+  publicDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:  
+        Aliases:
+          - images.somethingweird.tech
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: '/default.jpg'
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: '/default.jpg'
+        Origins:
+          - DomainName: images.somethingweird.tech.s3.us-west-2.amazonaws.com
+            Id: S3-images.somethingweird.tech
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginIdentity}'
+        Enabled: 'true'
+        Comment: Distribution for the static content
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          TargetOriginId: S3-images.somethingweird.tech
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          #AcmCertificateArn: "arn:aws:acm:us-west-2:949501214913:certificate/f906fd98-7527-4956-9962-9d11e0473849"
+          AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/179173ad-034d-4e1e-9713-71104092644f"
+          SslSupportMethod: "sni-only"
+          MinimumProtocolVersion: "TLSv1.2_2021"
+          #CloudFrontDefaultCertificate: 'true'
+
+Outputs:
+  distributionname:
+    Description: the cloudfront url for static images assets
+    Value: publicDistribution.DomainName
+    Export: 
+      Name: jy-distribution-name
+

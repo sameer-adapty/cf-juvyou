@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 bucekt for storage of profile pictures
+Resources:
+  S3BUCKET:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      # need something long and globally unique.
+      BucketName: "jy-user-profile-picture-bucket-dev2"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              # some hard-coding.. need to know the CMK here.. to be changed later.
+              KMSMasterKeyID: arn:aws:kms:us-west-2:949501214913:key/00376f09-3f61-4926-b335-a7b2dfea7d1e
+            BucketKeyEnabled: true
+
+      # no access to public what-so-ever.      
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls : true
+        BlockPublicPolicy : true
+        IgnorePublicAcls : true
+        RestrictPublicBuckets : true
+
+# Outputs:
+#   Bucket:
+#     Description: S3 Bucket Name
+#     Value: !Ref S3BUCKET  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # S3BUCKETPOL:
+  #   Type: 'AWS::S3::BucketPolicy'
+  #   Properties:
+  #     Bucket: !Ref S3BUCKET
+  #     PolicyDocument:
+  #       Id: CrossAccessPolicy
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Sid: CrossAccPolicyDoc
+  #           Action: "s3:ListBucket"
+  #           Effect: Allow
+  #           Resource: !Sub 'arn:aws:s3:::${S3BUCKET}'
+  #           Principal:
+  #             AWS: !Join ['', ["arn:aws:iam::", !Ref PublisherAccountID, ":root"]]
+  #         - Sid: CrossAccPolicyDoc
+  #           Action: "s3:GetObject"
+  #           Effect: Allow
+  #           Resource: !Sub 'arn:aws:s3:::${S3BUCKET}/*'
+  #           Principal:
+  #             AWS: !Join ['', ["arn:aws:iam::", !Ref PublisherAccountID, ":root"]]
