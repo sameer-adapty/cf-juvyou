@@ -1,0 +1,50 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: KMS key to be created in the same region of the s3 bucket
+Resources:
+  s3SymEncryptionKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Key for the user profile bucket.
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: !Sub 
+        - "key-user-profile-bucket-${envname}"
+        - envname: !ImportValue jy-envname
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+
+  s3SymEncryptionKeyAlias:
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: !Sub 
+      - "alias/key-user-profile-bucket-${envname}"
+      - envname: !ImportValue jy-envname
+
+      TargetKeyId: !Ref s3SymEncryptionKey
+  
+
+Outputs:
+  s3SymEncryptionKeyAlias:
+    Description: the Alias for the key
+    Value: !Ref s3SymEncryptionKeyAlias
+    Export: 
+      Name: jy-s3profilebucketkeyalias
+
+  s3SymEncryptionKey:
+    Description: the ARN for the key
+    Value: !GetAtt 's3SymEncryptionKey.Arn'
+    Export: 
+      Name: jy-s3profilebucketkeyarn
+
+  s3SymEncryptionKeyId:
+    Description: 'Key id.'
+    Value: !Ref s3SymEncryptionKey
+    Export:
+      Name: jy-s3profilebucketkeyID

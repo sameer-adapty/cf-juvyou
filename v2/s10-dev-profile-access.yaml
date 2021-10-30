@@ -1,0 +1,86 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: creates policy and role needed to get access to user profile picture bucket. 
+Resources:
+  CFNUserPolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub 
+        - "policy-ec2-api-server-s3-acccess-${envname}"
+        - envname: !ImportValue jy-envname
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:PutObject
+          - s3:GetObject
+          - kms:*
+          - s3:ListBucket
+          - s3:DeleteObject
+          Resource:
+          # profile picture bucket name
+          - arn:aws:s3:::jy-user-profile-picture-bucket-dev2/*
+          - arn:aws:s3:::jy-user-profile-picture-bucket-dev2
+          # a custom encryption key in this region.. above s3 bucket is to be encrypted using this.
+          - arn:aws:kms:*:949501214913:alias/key-user-profile-bucket-dev2
+          - arn:aws:kms:us-west-2:949501214913:key/00376f09-3f61-4926-b335-a7b2dfea7d1e
+
+          # Resource: '*'
+      Roles: 
+      - Ref: Ec2APIServerAccessRole
+
+  Ec2APIServerAccessRole: 
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: "instance-role-api-server-dev"
+      # below 3 are default roles bs needs.
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "ec2.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+
+  Ec2GenericAccessRole: 
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: "instance-role-ec2-generic-dev"
+      # below 3 are default roles bs needs.
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
+      - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "ec2.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Path: "/"
+
+
+Outputs:
+  jyec2apiserverrolename:
+    Description: This is the role we should use for ec2 instance of API Server
+    Value: !Ref Ec2APIServerAccessRole
+    Export: 
+      Name: jy-ec2apiserverrolename
+
+  jyec2genericrolename:
+    Description: This is the role we should use for ec2 instance of all non api servers
+    Value: !Ref Ec2GenericAccessRole
+    Export: 
+      Name: jy-ec2genericrolename

@@ -1,30 +1,30 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Beanstalk for Machine Learning module. Python based.
+Description: Create a beanstalk server for the API Server. Pick a key to be used with ec2 hosts.
 Parameters:
     KeyName:
       Type: AWS::EC2::KeyPair::KeyName
       Description: "Name of an existing SSH Keypair to access the instance"
 
 Resources:
-  MLServerApplication:
+  ConfServerApplication:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
-      Description: AWS Elastic Beanstalk MLServer Application
-  MLServerApplicationVersion:
+      Description: AWS Elastic Beanstalk ConfServer Application
+  ConfServerApplicationVersion:
     Type: AWS::ElasticBeanstalk::ApplicationVersion
     Properties:
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Application Version
+        Ref: ConfServerApplication
+      Description: AWS ElasticBeanstalk ConfServer Application Version
       SourceBundle:
-        S3Bucket: "jy-cf-setup-base-code-us-west-2"
-        S3Key: ml-server-09-29.zip
-  MLServerConfigurationTemplate:
+        S3Bucket: !Sub "jy-cf-setup-base-code-${AWS::Region}"
+        S3Key: config.zip
+  ConfServerConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Configuration Template
+        Ref: ConfServerApplication
+      Description: AWS ElasticBeanstalk ConfServer Configuration Template
       OptionSettings:
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
@@ -45,17 +45,20 @@ Resources:
 
       - Namespace: aws:elasticbeanstalk:environment
         OptionName: LoadBalancerType
+        # there is no need to have NLB on config server.
+        # ALB will work just fine..
         Value: 'network'
+        # Value: 'application'
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
-        Value: !ImportValue jy-vpcdev1
+        Value: !ImportValue jy-vpc-stg3
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
         Value: !Sub 
           - "${suba}, ${subb}, ${subc}"
-          - { suba: !ImportValue jy-vpcdev1-subnet-mla, subb: !ImportValue jy-vpcdev1-subnet-mlb, subc: !ImportValue jy-vpcdev1-subnet-mlc }
+          - { suba: !ImportValue jy-vpc-stg3-subnet-configa, subb: !ImportValue jy-vpc-stg3-subnet-configb, subc: !ImportValue jy-vpc-stg3-subnet-configc }
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
         Value: 't2.medium'
@@ -104,27 +107,39 @@ Resources:
         OptionName: RetentionInDays
         Value: '7'
 
+      # added new once - Oct 15th.. let's see how they work
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: HealthStreamingEnabled
+        Value: 'True'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: DeleteOnTerminate
+        Value: 'False'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: RetentionInDays
+        Value: '7'
+
       # environment variables to pass in
       - Namespace: aws:elasticbeanstalk:application:environment
         OptionName: "PORT"
-        Value: '8000'
+        # I understand port for config server is 8888
+        Value: '8888'
 
 
-      #SolutionStackName: "64bit Amazon Linux 2 v3.2.5 running Corretto 8"
-      SolutionStackName: "64bit Amazon Linux 2 v3.3.7 running Python 3.8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.2.7 running Corretto 8"
+      # SolutionStackName: "64bit Amazon Linux 2 v3.3.5 running Python 3.8"
 
-  MLServerEnvironment:
+  ConfServerEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       # let's give it a name
-      EnvironmentName: "beanstalk-mlserver-dev"
+      EnvironmentName: "beanstalk-configserver-stg3"
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Environment
+        Ref: ConfServerApplication
+      Description: AWS ElasticBeanstalk ConfServer Environment
       TemplateName:
-        Ref: MLServerConfigurationTemplate
+        Ref: ConfServerConfigurationTemplate
       VersionLabel:
-        Ref: MLServerApplicationVersion
+        Ref: ConfServerApplicationVersion
   
   # instance profile that uses the role we created earlier.  
   # has standard bs related policies and access to KMS/S3 buckets
@@ -132,16 +147,16 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !ImportValue jy-ec2apiserverrolename
+        - !ImportValue jy-ec2genericrolename-stg3
 
 Outputs:
   somevariable:
     Description: Some description
     Value: 
-      Ref: "MLServerConfigurationTemplate"
+      Ref: "ConfServerConfigurationTemplate"
   endpointurl:
     Description: the beanstalk endpoint url
-    Value:   !GetAtt MLServerEnvironment.EndpointURL
+    Value:   !GetAtt ConfServerEnvironment.EndpointURL
     Export:
-      Name: jy-branstalkmlseverurl
+      Name: jy-branstalkconfigseverurl-stg3
 

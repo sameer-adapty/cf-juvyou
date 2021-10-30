@@ -1,30 +1,30 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Beanstalk for Machine Learning module. Python based.
+Description: Create a beanstalk server for the API Server. Pick a key to be used with ec2 hosts.
 Parameters:
     KeyName:
       Type: AWS::EC2::KeyPair::KeyName
       Description: "Name of an existing SSH Keypair to access the instance"
 
 Resources:
-  MLServerApplication:
+  APIServerApplication:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
-      Description: AWS Elastic Beanstalk MLServer Application
-  MLServerApplicationVersion:
+      Description: AWS Elastic Beanstalk APIServer Application
+  APIServerApplicationVersion:
     Type: AWS::ElasticBeanstalk::ApplicationVersion
     Properties:
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Application Version
+        Ref: APIServerApplication
+      Description: AWS ElasticBeanstalk APIServer Application Version
       SourceBundle:
-        S3Bucket: "jy-cf-setup-base-code-us-west-2"
-        S3Key: ml-server-09-29.zip
-  MLServerConfigurationTemplate:
+        S3Bucket: !Sub "jy-cf-setup-base-code-${AWS::Region}"
+        S3Key: api.zip
+  APIServerConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Configuration Template
+        Ref: APIServerApplication
+      Description: AWS ElasticBeanstalk APIServer Configuration Template
       OptionSettings:
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
@@ -42,6 +42,9 @@ Resources:
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: EC2KeyName
         Value: !Ref KeyName
+      - Namespace: aws:autoscaling:launchconfiguration
+        OptionName: RootVolumeSize
+        Value: "30"
 
       - Namespace: aws:elasticbeanstalk:environment
         OptionName: LoadBalancerType
@@ -49,13 +52,17 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
-        Value: !ImportValue jy-vpcdev1
+        Value: !ImportValue jy-vpc-varenvname
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
         Value: !Sub 
           - "${suba}, ${subb}, ${subc}"
-          - { suba: !ImportValue jy-vpcdev1-subnet-mla, subb: !ImportValue jy-vpcdev1-subnet-mlb, subc: !ImportValue jy-vpcdev1-subnet-mlc }
+          - { suba: !ImportValue jy-vpc-varenvname-subnet-apia, subb: !ImportValue jy-vpc-varenvname-subnet-apib, subc: !ImportValue jy-vpc-varenvname-subnet-apic }
+      - Namespace: aws:ec2:instances
+        OptionName: InstanceTypes
+        Value: 't2.medium'
+
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
         Value: 't2.medium'
@@ -104,27 +111,43 @@ Resources:
         OptionName: RetentionInDays
         Value: '7'
 
+      # added new once - Oct 15th.. let's see how they work
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: HealthStreamingEnabled
+        Value: 'True'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: DeleteOnTerminate
+        Value: 'False'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: RetentionInDays
+        Value: '7'
+
+      # - Namespace: elasticbeanstalk:healthreporting:system
+      #   OptionName: SystemType
+      #   Value: 'enhanced'
+      # # end - added new once - Oct 15th.. let's see how they work
+
       # environment variables to pass in
       - Namespace: aws:elasticbeanstalk:application:environment
         OptionName: "PORT"
-        Value: '8000'
+        Value: '8080'
 
 
-      #SolutionStackName: "64bit Amazon Linux 2 v3.2.5 running Corretto 8"
-      SolutionStackName: "64bit Amazon Linux 2 v3.3.7 running Python 3.8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.2.7 running Corretto 8"
+      # SolutionStackName: "64bit Amazon Linux 2 v3.3.5 running Python 3.8"
 
-  MLServerEnvironment:
+  APIServerEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       # let's give it a name
-      EnvironmentName: "beanstalk-mlserver-dev"
+      EnvironmentName: "beanstalk-apiserver-varenvname"
       ApplicationName:
-        Ref: MLServerApplication
-      Description: AWS ElasticBeanstalk MLServer Environment
+        Ref: APIServerApplication
+      Description: AWS ElasticBeanstalk APIServer Environment
       TemplateName:
-        Ref: MLServerConfigurationTemplate
+        Ref: APIServerConfigurationTemplate
       VersionLabel:
-        Ref: MLServerApplicationVersion
+        Ref: APIServerApplicationVersion
   
   # instance profile that uses the role we created earlier.  
   # has standard bs related policies and access to KMS/S3 buckets
@@ -132,16 +155,16 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !ImportValue jy-ec2apiserverrolename
+        - !ImportValue jy-ec2apiserverrolename-varenvname
 
 Outputs:
   somevariable:
     Description: Some description
     Value: 
-      Ref: "MLServerConfigurationTemplate"
+      Ref: "APIServerConfigurationTemplate"
   endpointurl:
     Description: the beanstalk endpoint url
-    Value:   !GetAtt MLServerEnvironment.EndpointURL
+    Value:  !GetAtt  APIServerEnvironment.EndpointURL
     Export:
-      Name: jy-branstalkmlseverurl
+      Name: jy-branstalkapiseverurl-varenvname
 

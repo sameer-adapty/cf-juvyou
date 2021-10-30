@@ -111,7 +111,7 @@ Resources:
 
 
       #SolutionStackName: "64bit Amazon Linux 2 v3.2.5 running Corretto 8"
-      SolutionStackName: "64bit Amazon Linux 2 v3.3.7 running Python 3.8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.3.6 running Python 3.8"
 
   MLServerEnvironment:
     Type: AWS::ElasticBeanstalk::Environment

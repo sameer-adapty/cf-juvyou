@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create a hosted zone for application.local
+Resources:
+  DNS: 
+    Type: "AWS::Route53::HostedZone"
+    Properties: 
+      HostedZoneConfig: 
+        Comment: 'My hosted zone for application.local'
+      Name: 'application.local'
+      VPCs: 
+        - 
+          VPCId: !ImportValue jy-vpc-stg3
+          VPCRegion: !Ref "AWS::Region"
+          
+      HostedZoneTags: 
+        - 
+          Key: 'attachedto'
+          Value: 'stg3-vpc'
+
+  dnsbsapidev:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId : !Ref DNS
+      Name: bs-api-stg3.application.local
+      ResourceRecords:
+      - !ImportValue jy-branstalkapiseverurl-stg3
+      TTL: 900
+      Type: CNAME
+
+  dnsbsconfigdev:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId : !Ref DNS
+      Name: bs-config-stg3.application.local
+      ResourceRecords:
+      - !ImportValue jy-branstalkconfigseverurl-stg3
+      TTL: 900
+      Type: CNAME
+
+  dnsbsmldev:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId : !Ref DNS
+      Name: bs-ml-stg3.application.local
+      ResourceRecords:
+      - !ImportValue jy-branstalkmlseverurl-stg3
+      TTL: 900
+      Type: CNAME

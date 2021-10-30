@@ -7,7 +7,7 @@ Resources:
     Properties:
       AccessControl: Private
       # need something long and globally unique.
-      BucketName: "images.juvyou.com"
+      BucketName: "images.somethingweird.tech"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -30,7 +30,7 @@ Resources:
   BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
-        Bucket: images.juvyou.com
+        Bucket: images.somethingweird.tech
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -38,7 +38,7 @@ Resources:
               Principal:
                 AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginIdentity}'
               Action: 's3:GetObject'
-              Resource: arn:aws:s3:::images.juvyou.com/*
+              Resource: arn:aws:s3:::images.somethingweird.tech/*
       DependsOn:
         - "publicDistribution"
   
@@ -47,7 +47,7 @@ Resources:
     Properties:
       DistributionConfig:  
         Aliases:
-          - images.juvyou.com
+          - images.somethingweird.tech
         CustomErrorResponses:
           - ErrorCode: 403
             ResponseCode: 200
@@ -56,8 +56,8 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: '/default.jpg'
         Origins:
-          - DomainName: images.juvyou.com.s3.us-west-2.amazonaws.com
-            Id: S3-images.juvyou.com
+          - DomainName: images.somethingweird.tech.s3.us-west-2.amazonaws.com
+            Id: S3-images.somethingweird.tech
             S3OriginConfig:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginIdentity}'
         Enabled: 'true'
@@ -66,7 +66,7 @@ Resources:
           AllowedMethods:
             - GET
             - HEAD
-          TargetOriginId: S3-images.juvyou.com
+          TargetOriginId: S3-images.somethingweird.tech
           ForwardedValues:
             QueryString: 'false'
             Cookies:
@@ -74,18 +74,15 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
           #AcmCertificateArn: "arn:aws:acm:us-west-2:949501214913:certificate/f906fd98-7527-4956-9962-9d11e0473849"
-          #AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/179173ad-034d-4e1e-9713-71104092644f"
-          
-          # certificate below is for juvyou.com from us-east-1 not from current region.
-          AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/289b6988-e9cb-477e-95df-b7ccf42fc1ea"
+          AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/179173ad-034d-4e1e-9713-71104092644f"
           SslSupportMethod: "sni-only"
           MinimumProtocolVersion: "TLSv1.2_2021"
           #CloudFrontDefaultCertificate: 'true'
 
 Outputs:
-  distributionname2:
+  distributionname:
     Description: the cloudfront url for static images assets
     Value: publicDistribution.DomainName
     Export: 
-      Name: jy-distribution-name-2
+      Name: jy-distribution-name
 

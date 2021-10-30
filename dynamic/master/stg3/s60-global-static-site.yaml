@@ -1,5 +1,10 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: S3 bucekt for static assets/cdn
+Parameters:
+  ACMGlobalCertArn:
+    Type: String
+    Description: Provide ARN for certificate to be use from us-east-1 zone
+
 Resources:
 
   s3bucketglobalstatic:
@@ -56,7 +61,7 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: '/default.jpg'
         Origins:
-          - DomainName: images.juvyou.com.s3.us-west-2.amazonaws.com
+          - DomainName: !Sub images.juvyou.com.s3.${AWS::Region}.amazonaws.com
             Id: S3-images.juvyou.com
             S3OriginConfig:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginIdentity}'
@@ -73,11 +78,10 @@ Resources:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
-          #AcmCertificateArn: "arn:aws:acm:us-west-2:949501214913:certificate/f906fd98-7527-4956-9962-9d11e0473849"
-          #AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/179173ad-034d-4e1e-9713-71104092644f"
-          
           # certificate below is for juvyou.com from us-east-1 not from current region.
-          AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/289b6988-e9cb-477e-95df-b7ccf42fc1ea"
+          #AcmCertificateArn: "arn:aws:acm:us-east-1:949501214913:certificate/289b6988-e9cb-477e-95df-b7ccf42fc1ea"
+          AcmCertificateArn: !Ref ACMGlobalCertArn
+
           SslSupportMethod: "sni-only"
           MinimumProtocolVersion: "TLSv1.2_2021"
           #CloudFrontDefaultCertificate: 'true'
@@ -87,5 +91,5 @@ Outputs:
     Description: the cloudfront url for static images assets
     Value: publicDistribution.DomainName
     Export: 
-      Name: jy-distribution-name-2
+      Name: jy-distribution-name-stg3
 

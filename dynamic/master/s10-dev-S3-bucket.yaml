@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: S3 bucekt for storage of profile pictures
+Resources:
+  S3BUCKET:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      # need something long and globally unique.
+      BucketName: "jy-user-profile-picture-bucket-varenvname"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              # some hard-coding.. need to know the CMK here.. to be changed later.
+              KMSMasterKeyID: !ImportValue jy-s3profilebucketkey-varenvname 
+            BucketKeyEnabled: true
+
+      # no access to public what-so-ever.      
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls : true
+        BlockPublicPolicy : true
+        IgnorePublicAcls : true
+        RestrictPublicBuckets : true

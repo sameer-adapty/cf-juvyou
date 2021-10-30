@@ -17,8 +17,8 @@ Resources:
         Ref: MLServerApplication
       Description: AWS ElasticBeanstalk MLServer Application Version
       SourceBundle:
-        S3Bucket: "jy-cf-setup-base-code-us-west-2"
-        S3Key: ml-server-09-29.zip
+        S3Bucket: !Sub "jy-cf-setup-base-code-${AWS::Region}"
+        S3Key: recommend.zip
   MLServerConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
@@ -49,13 +49,13 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
-        Value: !ImportValue jy-vpcdev1
+        Value: !ImportValue jy-vpc-stg3
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
         Value: !Sub 
           - "${suba}, ${subb}, ${subc}"
-          - { suba: !ImportValue jy-vpcdev1-subnet-mla, subb: !ImportValue jy-vpcdev1-subnet-mlb, subc: !ImportValue jy-vpcdev1-subnet-mlc }
+          - { suba: !ImportValue jy-vpc-stg3-subnet-mla, subb: !ImportValue jy-vpc-stg3-subnet-mlb, subc: !ImportValue jy-vpc-stg3-subnet-mlc }
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
         Value: 't2.medium'
@@ -104,6 +104,17 @@ Resources:
         OptionName: RetentionInDays
         Value: '7'
 
+      # added new once - Oct 15th.. let's see how they work
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: HealthStreamingEnabled
+        Value: 'True'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: DeleteOnTerminate
+        Value: 'False'
+      - Namespace: aws:elasticbeanstalk:cloudwatch:logs:health
+        OptionName: RetentionInDays
+        Value: '7'
+
       # environment variables to pass in
       - Namespace: aws:elasticbeanstalk:application:environment
         OptionName: "PORT"
@@ -132,7 +143,7 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !ImportValue jy-ec2apiserverrolename
+        - !ImportValue jy-ec2apiserverrolename-stg3
 
 Outputs:
   somevariable:
@@ -143,5 +154,5 @@ Outputs:
     Description: the beanstalk endpoint url
     Value:   !GetAtt MLServerEnvironment.EndpointURL
     Export:
-      Name: jy-branstalkmlseverurl
+      Name: jy-branstalkmlseverurl-stg3
 

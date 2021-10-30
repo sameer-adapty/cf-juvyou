@@ -1,0 +1,64 @@
+Parameters: 
+  EnvName: 
+    AllowedValues:
+      - "dev1"
+      - "dev2"
+      - "qa1"
+      - "qa2"
+      - "stage1"
+      - "stage2"
+      - "uat1"
+      - "uat2"
+      - "prod1"
+      - "prod2"
+    Default: "dev1"
+    Description: "What environment is this?"
+    Type: String
+Mappings: 
+  networkpartofcidr:
+    dev1:
+      cidrvalue: "10.21"
+    dev2:
+      cidrvalue: "10.22"
+    qa1:
+      cidrvalue: "10.23"
+    qa2:
+      cidrvalue: "10.24"
+    stage1:
+      cidrvalue: "10.25"
+    stage2:
+      cidrvalue: "10.26"
+    uat1:
+      cidrvalue: "10.27"
+    uat2:
+      cidrvalue: "10.28"
+    prod1:
+      cidrvalue: "10.30"
+    prod2:
+      cidrvalue: "10.31"
+
+Resources:
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+Outputs:
+  jyenvname:
+    Description: Logic id for the vpclink
+    Value: !Ref EnvName
+    Export:
+      Name: jy-envname
+  jynetworkcidr: 
+      Description: Network part of the CIDR block
+      Value: !FindInMap [networkpartofcidr, !Ref EnvName , cidrvalue]
+      Export:
+        Name: jy-networkcidr
+
+      # CidrBlock: !Sub
+      # - '${networkcidr}.20.0/24'
+      # - networkcidr: !ImportValue jy-networkcidr
