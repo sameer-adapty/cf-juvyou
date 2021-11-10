@@ -65,7 +65,7 @@ Resources:
             - "multipart/form-data"
             
             DisableExecuteApiEndpoint : "true"
-            Name: "api-varenvname"
+            Name: "api-stg2"
             ApiKeySourceType: "HEADER"
             EndpointConfiguration: 
                 Types: 
@@ -119,8 +119,8 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceRecomm
-#                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
-                ConnectionId: !ImportValue jy-vpclink-confserver-varenvname
+#                ConnectionId: !ImportValue jy-apigateway-vpclink-stg2
+                ConnectionId: !ImportValue jy-vpclink-confserver-stg2
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "ANY"
                 IntegrationResponses: 
@@ -132,8 +132,8 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${mlurl}/recommender/{proxy}"
-#                - mlurl: !ImportValue jy-branstalkmlseverurl-varenvname
-                - mlurl: !ImportValue jy-branstalkconfigseverurl-varenvname
+#                - mlurl: !ImportValue jy-branstalkmlseverurl-stg2
+                - mlurl: !ImportValue jy-branstalkconfigseverurl-stg2
 
     ApiGatewayMethod:
 
@@ -155,7 +155,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy0
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-stg2
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "GET"
                 IntegrationResponses: 
@@ -167,7 +167,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/api-docs/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-stg2
 
     ApiGatewayMethod2:
         Type: "AWS::ApiGateway::Method"
@@ -183,7 +183,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy1
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-stg2
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "ANY"
                 IntegrationResponses: 
@@ -195,7 +195,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-stg2
 
     ApiGatewayMethod4:
         Type: "AWS::ApiGateway::Method"
@@ -216,7 +216,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy3
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-stg2
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "GET"
                 IntegrationResponses: 
@@ -228,20 +228,20 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/images/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-stg2
 
     ApiGatewayBasePathMapping:
         Type: "AWS::ApiGateway::BasePathMapping"
         Properties:
             BasePath: "(none)"
-            DomainName: "varenvname.somethingweird.tech"
+            DomainName: "stg2.somethingweird.tech"
             RestApiId: !Ref ApiGatewayRestApi
             Stage: !Ref ApiGatewayStage
 
     ApiGatewayDomainName:
         Type: "AWS::ApiGateway::DomainName"
         Properties:
-            DomainName: "varenvname.somethingweird.tech"
+            DomainName: "stg2.somethingweird.tech"
             EndpointConfiguration: 
                 Types: 
                   - "REGIONAL"

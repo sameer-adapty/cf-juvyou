@@ -52,13 +52,13 @@ Resources:
 
       - Namespace: aws:ec2:vpc
         OptionName: VPCId
-        Value: !ImportValue jy-vpc-varenvname
+        Value: !ImportValue jy-vpc-stg2
 
       - Namespace: aws:ec2:vpc
         OptionName: Subnets
         Value: !Sub 
           - "${suba}, ${subb}, ${subc}"
-          - { suba: !ImportValue jy-vpc-varenvname-subnet-apia, subb: !ImportValue jy-vpc-varenvname-subnet-apib, subc: !ImportValue jy-vpc-varenvname-subnet-apic }
+          - { suba: !ImportValue jy-vpc-stg2-subnet-apia, subb: !ImportValue jy-vpc-stg2-subnet-apib, subc: !ImportValue jy-vpc-stg2-subnet-apic }
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
         Value: 't2.medium'
@@ -171,7 +171,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       # let's give it a name
-      EnvironmentName: "beanstalk-apiserver-varenvname"
+      EnvironmentName: "beanstalk-apiserver-stg2"
       ApplicationName:
         Ref: APIServerApplication
       Description: AWS ElasticBeanstalk APIServer Environment
@@ -186,7 +186,7 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !ImportValue jy-ec2apiserverrolename-varenvname
+        - !ImportValue jy-ec2apiserverrolename-stg2
 
 Outputs:
   somevariable:
@@ -197,5 +197,5 @@ Outputs:
     Description: the beanstalk endpoint url
     Value:  !GetAtt  APIServerEnvironment.EndpointURL
     Export:
-      Name: jy-branstalkapiseverurl-varenvname
+      Name: jy-branstalkapiseverurl-stg2
 

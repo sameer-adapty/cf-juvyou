@@ -1,0 +1,95 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: KMS key to be created in the same region of the s3 bucket
+Resources:
+  s3SymEncryptionKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Key for the user profile bucket.
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: key-user-profile-bucket-stg2
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow access for Key Administrators
+            Effect: Allow
+            Principal:
+              AWS:
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri'
+                - 'arn:aws:iam::949501214913:user/abbas.bhinderwala@adapty.com'
+                - 'arn:aws:iam::949501214913:user/nilesh.parab@adapty.com'
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri@adapty.com'
+            Action:
+              - 'kms:Create*'
+              - 'kms:Describe*'
+              - 'kms:Enable*'
+              - 'kms:List*'
+              - 'kms:Put*'
+              - 'kms:Update*'
+              - 'kms:Revoke*'
+              - 'kms:Disable*'
+              - 'kms:Get*'
+              - 'kms:Delete*'
+              - 'kms:TagResource'
+              - 'kms:UntagResource'
+              - 'kms:ScheduleKeyDeletion'
+              - 'kms:CancelKeyDeletion'
+            Resource: '*'
+          - Sid: Allow use of the key
+            Effect: Allow
+            Principal:
+              AWS:
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri'
+                - 'arn:aws:iam::949501214913:user/abbas.bhinderwala@adapty.com'
+                - 'arn:aws:iam::949501214913:user/nilesh.parab@adapty.com'
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri@adapty.com'
+            Action:
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey*'
+              - 'kms:DescribeKey'
+            Resource: '*'
+          - Sid: Allow attachment of persistent resources
+            Effect: Allow
+            Principal:
+              AWS:
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri'
+                - 'arn:aws:iam::949501214913:user/abbas.bhinderwala@adapty.com'
+                - 'arn:aws:iam::949501214913:user/nilesh.parab@adapty.com'
+                - 'arn:aws:iam::949501214913:user/mukta.shahdadpuri@adapty.com'
+            Action:
+              - 'kms:CreateGrant'
+              - 'kms:ListGrants'
+              - 'kms:RevokeGrant'
+            Resource: '*'
+            Condition:
+              Bool:
+                'kms:GrantIsForAWSResource': 'true'
+
+  s3SymEncryptionKeyAlias:
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: alias/key-user-profile-bucket-stg2
+      TargetKeyId: !Ref s3SymEncryptionKey
+  
+
+Outputs:
+  s3SymEncryptionKey:
+    Description: the ARN for the key
+    Value: !GetAtt 's3SymEncryptionKey.Arn'
+    Export: 
+      Name: jy-s3profilebucketkey-stg2
+
+  s3SymEncryptionKeyId:
+    Description: 'Key id.'
+    Value: !Ref s3SymEncryptionKey
+    Export:
+      Name: jy-s3profilebucketkeyID-stg2
+      

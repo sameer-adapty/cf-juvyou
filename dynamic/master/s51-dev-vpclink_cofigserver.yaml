@@ -1,0 +1,21 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  NLBArnNumber:
+    Type: String
+    Description: Provide ARN  for the Load balancer created for Config server
+Resources:
+    MyVpcLink:
+        Type: AWS::ApiGateway::VpcLink
+        Properties:
+            Description: "config sever vpclink"
+            Name: "apilink-configserver-varenvname"
+            TargetArns:
+               - !Ref NLBArnNumber
+               
+Outputs:
+  jyapigatewayvpclinkconfserver:
+    Description: Logic id for the vpclink config server
+    Value: !Ref MyVpcLink
+    Export: 
+      Name: jy-vpclink-confserver-varenvname
