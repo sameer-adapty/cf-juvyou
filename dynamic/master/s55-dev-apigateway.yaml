@@ -119,8 +119,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceRecomm
-#                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
-                ConnectionId: !ImportValue jy-vpclink-confserver-varenvname
+                ConnectionId: !ImportValue jy-vpclink-recoserver-varenvname
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "ANY"
                 IntegrationResponses: 
@@ -132,8 +131,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${mlurl}/recommender/{proxy}"
-#                - mlurl: !ImportValue jy-branstalkmlseverurl-varenvname
-                - mlurl: !ImportValue jy-branstalkconfigseverurl-varenvname
+                - mlurl: !ImportValue jy-branstalkmlseverurl-varenvname
 
     ApiGatewayMethod:
 

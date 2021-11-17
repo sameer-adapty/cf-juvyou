@@ -121,8 +121,23 @@ Resources:
       # environment variables to pass in
       - Namespace: aws:elasticbeanstalk:application:environment
         OptionName: "PORT"
-        # I understand port for config server is 8888
         Value: '8888'
+
+      - Namespace: aws:elasticbeanstalk:application:environment
+        OptionName: "GRADLE_HOME"
+        Value: '/usr/local/gradle'
+
+      - Namespace: aws:elasticbeanstalk:application:environment
+        OptionName: "JAVA_HOME"
+        Value: '/usr/lib/jvm/java'
+
+      - Namespace: aws:elasticbeanstalk:application:environment
+        OptionName: "M2"
+        Value: '/usr/local/apache-maven/bin'
+
+      - Namespace: aws:elasticbeanstalk:application:environment
+        OptionName: "M2_HOME"
+        Value: '/usr/local/apache-maven'
 
 
       SolutionStackName: "64bit Amazon Linux 2 v3.2.7 running Corretto 8"

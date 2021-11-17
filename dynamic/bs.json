@@ -1,0 +1,76 @@
+{
+    "Environments": [
+        {
+            "EnvironmentName": "beanstalk-mlserver-dev",
+            "EnvironmentId": "e-fsipuzpuaf",
+            "ApplicationName": "s08-dev-bs-mlserver-MLServerApplication-W8AK0MUIZQRL",
+            "VersionLabel": "code-pipeline-1636965049369-0jbg890kBu6HN0TxSMkIjqjdsbUBPb7R",
+            "SolutionStackName": "64bit Amazon Linux 2 v3.3.6 running Python 3.8",
+            "PlatformArn": "arn:aws:elasticbeanstalk:us-west-2::platform/Python 3.8 running on 64bit Amazon Linux 2/3.3.6",
+            "Description": "AWS ElasticBeanstalk MLServer Environment",
+            "EndpointURL": "awseb-AWSEB-7VD7MJ1FVOIU-ee191055bd005081.elb.us-west-2.amazonaws.com",
+            "CNAME": "beanstalk-mlserver-dev.eba-5h2xzj4x.us-west-2.elasticbeanstalk.com",
+            "DateCreated": "2021-10-05T10:50:23.765000+00:00",
+            "DateUpdated": "2021-11-15T08:31:53.329000+00:00",
+            "Status": "Ready",
+            "AbortableOperationInProgress": false,
+            "Health": "Green",
+            "HealthStatus": "Ok",
+            "Tier": {
+                "Name": "WebServer",
+                "Type": "Standard",
+                "Version": "1.0"
+            },
+            "EnvironmentLinks": [],
+            "EnvironmentArn": "arn:aws:elasticbeanstalk:us-west-2:949501214913:environment/s08-dev-bs-mlserver-MLServerApplication-W8AK0MUIZQRL/beanstalk-mlserver-dev"
+        },
+        {
+            "EnvironmentName": "beanstalk-configserver-dev",
+            "EnvironmentId": "e-3y9bpf3cyw",
+            "ApplicationName": "s07-dev-bs-confserver-ConfServerApplication-1X15PLWGU5PJ8",
+            "VersionLabel": "code-pipeline-1635847995041-BuildArtifact-4140b8a2-e7cc-4f1b-9ac6-c06933b8fc06",
+            "SolutionStackName": "64bit Amazon Linux 2 v3.2.7 running Corretto 8",
+            "PlatformArn": "arn:aws:elasticbeanstalk:us-west-2::platform/Corretto 8 running on 64bit Amazon Linux 2/3.2.7",
+            "Description": "AWS ElasticBeanstalk ConfServer Environment",
+            "EndpointURL": "awseb-AWSEB-1B3Q5F6L7NU9V-26d09658d5fbc895.elb.us-west-2.amazonaws.com",
+            "CNAME": "beanstalk-configserver-dev.eba-ip9zyapj.us-west-2.elasticbeanstalk.com",
+            "DateCreated": "2021-10-05T10:45:35.597000+00:00",
+            "DateUpdated": "2021-11-15T14:02:14.894000+00:00",
+            "Status": "Ready",
+            "AbortableOperationInProgress": false,
+            "Health": "Green",
+            "HealthStatus": "Ok",
+            "Tier": {
+                "Name": "WebServer",
+                "Type": "Standard",
+                "Version": "1.0"
+            },
+            "EnvironmentLinks": [],
+            "EnvironmentArn": "arn:aws:elasticbeanstalk:us-west-2:949501214913:environment/s07-dev-bs-confserver-ConfServerApplication-1X15PLWGU5PJ8/beanstalk-configserver-dev"
+        },
+        {
+            "EnvironmentName": "beanstalk-apiserver-dev",
+            "EnvironmentId": "e-wikcgtpswz",
+            "ApplicationName": "s06-dev-bs-apiserver-APIServerApplication-1AMNDXZWPTCO0",
+            "VersionLabel": "code-pipeline-1637000189143-BuildArtifact-fc481663-142c-431e-8528-409824fa74dc",
+            "SolutionStackName": "64bit Amazon Linux 2 v3.2.6 running Corretto 8",
+            "PlatformArn": "arn:aws:elasticbeanstalk:us-west-2::platform/Corretto 8 running on 64bit Amazon Linux 2/3.2.6",
+            "Description": "AWS ElasticBeanstalk APIServer Environment",
+            "EndpointURL": "awseb-AWSEB-1C0OCQFCL24F8-5fc4783c6448b1d9.elb.us-west-2.amazonaws.com",
+            "CNAME": "beanstalk-apiserver-dev.eba-ggprmkbq.us-west-2.elasticbeanstalk.com",
+            "DateCreated": "2021-10-05T10:37:07.155000+00:00",
+            "DateUpdated": "2021-11-15T18:17:12.832000+00:00",
+            "Status": "Ready",
+            "AbortableOperationInProgress": false,
+            "Health": "Yellow",
+            "HealthStatus": "Warning",
+            "Tier": {
+                "Name": "WebServer",
+                "Type": "Standard",
+                "Version": "1.0"
+            },
+            "EnvironmentLinks": [],
+            "EnvironmentArn": "arn:aws:elasticbeanstalk:us-west-2:949501214913:environment/s06-dev-bs-apiserver-APIServerApplication-1AMNDXZWPTCO0/beanstalk-apiserver-dev"
+        }
+    ]
+}
