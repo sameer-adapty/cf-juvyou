@@ -11,4 +11,4 @@ openssl req -new -newkey rsa:4096 -keyout client-01.key -out client-01.csr
 openssl x509 -req -CA root-ca-dev.crt -CAkey root-ca-dev.key -in client-01.csr -out client-01.crt -days 365 -CAcreateserial
 
 # make a bundle of the files to be used in trust store
-cat root-ca-dev.key root-ca-dev.crt > ca-key-bundle.txt 
+cat root-ca-dev.key root-ca-dev.crt > root-ca-bundle.txt

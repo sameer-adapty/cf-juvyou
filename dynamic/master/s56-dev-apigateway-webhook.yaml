@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: API Gateway for the environment
+Parameters:
+  RegionCertARN:
+    Type: String
+    Description: Provide ARN  for the SSL certificate located in the same region
+Resources:
+    ApiGatewayResourceIntegration:
+        Type: "AWS::ApiGateway::Resource"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            PathPart: "integration"
+            ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+
+    ApiGatewayResourceIntegrationKibo:
+        Type: "AWS::ApiGateway::Resource"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            PathPart: "kibo"
+            ParentId: !Ref ApiGatewayResourceIntegration
+
+    ApiGatewayResourceIntegrationKiboWebHook:
+        Type: "AWS::ApiGateway::Resource"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            PathPart: "webhook"
+            ParentId: !Ref ApiGatewayResourceIntegrationKibo
+
+    ApiGatewayResourceIntegrationKiboWebHookAccountUpdate:
+        Type: "AWS::ApiGateway::Resource"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            PathPart: "account-update"
+            ParentId: !Ref ApiGatewayResourceIntegrationKiboWebHook
+
+    ApiGatewayRestApi:
+        Type: "AWS::ApiGateway::RestApi"
+        Properties:
+            DisableExecuteApiEndpoint : "true"
+            Name: "api-webhook-varenvname"
+            ApiKeySourceType: "HEADER"
+            EndpointConfiguration: 
+                Types: 
+                  - "REGIONAL"
+                  
+    Deployment:
+      Type: 'AWS::ApiGateway::Deployment'
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        Description: My deployment
+      DependsOn:
+        - "ApiGatewayMethodAccountUpdate"
+
+
+    ApiGatewayStage:
+        Type: "AWS::ApiGateway::Stage"
+        Properties:
+            StageName: "v1"
+            DeploymentId: !Ref Deployment
+            RestApiId: !Ref ApiGatewayRestApi
+            CacheClusterEnabled: false
+            MethodSettings: 
+              - ResourcePath: "/*"
+                HttpMethod: "*"
+                MetricsEnabled: false
+                DataTraceEnabled: false
+                CachingEnabled: false
+            TracingEnabled: false
+
+    ApiGatewayMethodAccountUpdate:
+    
+        Type: "AWS::ApiGateway::Method"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            ResourceId: !Ref ApiGatewayResourceIntegrationKiboWebHookAccountUpdate
+            HttpMethod: "POST"
+            AuthorizationType: "NONE"
+            ApiKeyRequired: false
+            RequestParameters: 
+                "method.request.path.proxy": true
+            MethodResponses: 
+              - 
+                ResponseModels: 
+                    "application/json": !Ref ApiGatewayModel2
+                StatusCode: "200"
+            Integration: 
+                CacheKeyParameters: 
+                  - "method.request.path.proxy"
+                CacheNamespace: !Ref ApiGatewayResourceIntegration
+                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionType: "VPC_LINK"
+                IntegrationHttpMethod: "ANY"
+                IntegrationResponses: 
+                  - StatusCode: "200"
+                PassthroughBehavior: "WHEN_NO_MATCH"
+                RequestParameters: 
+                    "integration.request.path.proxy": "method.request.path.proxy"
+                TimeoutInMillis: 29000
+                Type: "HTTP_PROXY"
+                Uri: !Sub 
+                - "http://${mlurl}/integration/kibo/webhook/account-update"
+                - mlurl: !ImportValue jy-branstalkapiseverurl-varenvname
+
+
+    ApiGatewayBasePathMapping:
+        Type: "AWS::ApiGateway::BasePathMapping"
+        Properties:
+            BasePath: "(none)"
+            DomainName: "varenvname.somethingweird.tech"
+            RestApiId: !Ref ApiGatewayRestApi
+            Stage: !Ref ApiGatewayStage
+
+    ApiGatewayDomainName:
+        Type: "AWS::ApiGateway::DomainName"
+        Properties:
+            DomainName: "webbook.varenvname.somethingweird.tech"
+            EndpointConfiguration: 
+                Types: 
+                  - "REGIONAL"
+            # MutualTlsAuthentication:
+            #     TruststoreUri: "s3://app-setup/truststore-dev/root-ca-dev-bundle02.txt"
+            SecurityPolicy: "TLS_1_2"
+            RegionalCertificateArn: !Ref RegionCertARN
+
+    ApiGatewayModel2:
+        Type: "AWS::ApiGateway::Model"
+        Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            Name: "Empty2"
+            Description: "This is a default empty schema model"
+            Schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "title" : "Empty Schema",
+                  "type" : "object"
+                }
+            ContentType: "application/json"
+
+

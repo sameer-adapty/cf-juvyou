@@ -65,7 +65,7 @@ Resources:
             - "multipart/form-data"
             
             DisableExecuteApiEndpoint : "true"
-            Name: "api-varenvname"
+            Name: "api-dev"
             ApiKeySourceType: "HEADER"
             EndpointConfiguration: 
                 Types: 
@@ -119,7 +119,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceRecomm
-                ConnectionId: !ImportValue jy-vpclink-recoserver-varenvname
+                ConnectionId: !ImportValue jy-vpclink-recoserver-dev
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "ANY"
                 IntegrationResponses: 
@@ -131,7 +131,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${mlurl}/recommender/{proxy}"
-                - mlurl: !ImportValue jy-branstalkmlseverurl-varenvname
+                - mlurl: !ImportValue jy-branstalkmlseverurl-dev
 
     ApiGatewayMethod:
 
@@ -153,7 +153,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy0
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-dev
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "GET"
                 IntegrationResponses: 
@@ -165,7 +165,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/api-docs/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-dev
 
     ApiGatewayMethod2:
         Type: "AWS::ApiGateway::Method"
@@ -181,7 +181,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy1
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-dev
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "ANY"
                 IntegrationResponses: 
@@ -193,7 +193,7 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-dev
 
     ApiGatewayMethod4:
         Type: "AWS::ApiGateway::Method"
@@ -214,7 +214,7 @@ Resources:
                 CacheKeyParameters: 
                   - "method.request.path.proxy"
                 CacheNamespace: !Ref ApiGatewayResourceProxy3
-                ConnectionId: !ImportValue jy-apigateway-vpclink-varenvname
+                ConnectionId: !ImportValue jy-apigateway-vpclink-dev
                 ConnectionType: "VPC_LINK"
                 IntegrationHttpMethod: "GET"
                 IntegrationResponses: 
@@ -226,26 +226,25 @@ Resources:
                 Type: "HTTP_PROXY"
                 Uri: !Sub 
                 - "http://${apiurl}/images/{proxy}"
-                - apiurl: !ImportValue jy-branstalkapiseverurl-varenvname
+                - apiurl: !ImportValue jy-branstalkapiseverurl-dev
 
     ApiGatewayBasePathMapping:
         Type: "AWS::ApiGateway::BasePathMapping"
         Properties:
             BasePath: "(none)"
-            DomainName: "varenvname.somethingweird.tech"
+            DomainName: "dev.somethingweird.tech"
             RestApiId: !Ref ApiGatewayRestApi
             Stage: !Ref ApiGatewayStage
 
     ApiGatewayDomainName:
         Type: "AWS::ApiGateway::DomainName"
         Properties:
-            DomainName: "varenvname.somethingweird.tech"
+            DomainName: "dev.somethingweird.tech"
             EndpointConfiguration: 
                 Types: 
                   - "REGIONAL"
             MutualTlsAuthentication:
-                #TruststoreUri: "s3://app-setup/truststore-dev/root-ca-dev-bundle02.txt"
-                TruststoreUri: !Sub "jy-cf-setup-api-truststore-${AWS::Region}/root-ca-bundle.txt"
+                TruststoreUri: "s3://app-setup/truststore-dev/root-ca-dev-bundle02.txt"
             SecurityPolicy: "TLS_1_2"
             RegionalCertificateArn: !Ref RegionCertARN
 
