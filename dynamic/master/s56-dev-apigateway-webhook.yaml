@@ -106,14 +106,14 @@ Resources:
         Type: "AWS::ApiGateway::BasePathMapping"
         Properties:
             BasePath: "(none)"
-            DomainName: "varenvname.somethingweird.tech"
+            DomainName: "webhook-varenvname.somethingweird.tech"
             RestApiId: !Ref ApiGatewayRestApi
             Stage: !Ref ApiGatewayStage
 
     ApiGatewayDomainName:
         Type: "AWS::ApiGateway::DomainName"
         Properties:
-            DomainName: "webbook.varenvname.somethingweird.tech"
+            DomainName: "webhook-varenvname.somethingweird.tech"
             EndpointConfiguration: 
                 Types: 
                   - "REGIONAL"

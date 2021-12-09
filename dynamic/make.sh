@@ -70,6 +70,15 @@ do
   sed "s/varenvname/$envname/g" master/$file | sed "s/10.20/$cidr/g" > $envname/$file
 done
 
+# just loop thru' all the files and make the needed replacement.
+for file in master/*.sh
+do
+  file=`echo $file | cut -f2 -d"/"`
+  echo "processing $file"
+  sed "s/varenvname/$envname/g" master/$file | sed "s/10.20/$cidr/g" > $envname/$file
+done
+
+
 echo "Done"
 
 

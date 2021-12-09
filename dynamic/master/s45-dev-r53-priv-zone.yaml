@@ -46,3 +46,15 @@ Resources:
       - !ImportValue jy-branstalkmlseverurl-varenvname
       TTL: 900
       Type: CNAME
+
+  dnsbsschdev:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId : !Ref DNS
+      Name: bs-shed-varenvname.application.local
+      ResourceRecords:
+      - !ImportValue jy-branstalkschedseverurl-varenvname
+      TTL: 900
+      Type: CNAME
+
+      

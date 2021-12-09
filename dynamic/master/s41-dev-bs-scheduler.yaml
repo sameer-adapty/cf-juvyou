@@ -58,7 +58,7 @@ Resources:
         OptionName: Subnets
         Value: !Sub 
           - "${suba}, ${subb}, ${subc}"
-          - { suba: !ImportValue jy-vpc-varenvname-subnet-scheda, subb: !ImportValue jy-vpc-varenvname-subnet-schedb, subc: !ImportValue jy-vpc-varenvname-subnet-schedc }
+          - { suba: !ImportValue jy-vpc-varenvname-subnet-configa, subb: !ImportValue jy-vpc-varenvname-subnet-configb, subc: !ImportValue jy-vpc-varenvname-subnet-configc }
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
         Value: 't2.medium'
@@ -169,13 +169,13 @@ Resources:
         Value: '/usr/local/apache-maven'
 
 
-      SolutionStackName: "64bit Amazon Linux 2 v3.2.7 running Corretto 8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.2.8 running Corretto 8"
 
   SchedulerEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       # let's give it a name
-      EnvironmentName: "beanstalk-Scheduler-varenvname"
+      EnvironmentName: "beanstalk-scheduler-varenvname"
       ApplicationName:
         Ref: SchedulerApplication
       Description: AWS ElasticBeanstalk Scheduler Environment
@@ -190,7 +190,7 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !ImportValue jy-ec2Schedulerrolename-varenvname
+        - !ImportValue jy-ec2genericrolename-varenvname
 
 Outputs:
   somevariable:

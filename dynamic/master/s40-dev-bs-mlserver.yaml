@@ -58,7 +58,7 @@ Resources:
           - { suba: !ImportValue jy-vpc-varenvname-subnet-mla, subb: !ImportValue jy-vpc-varenvname-subnet-mlb, subc: !ImportValue jy-vpc-varenvname-subnet-mlc }
       - Namespace: aws:ec2:instances
         OptionName: InstanceTypes
-        Value: 't2.medium'
+        Value: 't3.medium'
 
       # don't want this to be visible publically. should resolve to internal ip.
       - Namespace: aws:ec2:vpc
@@ -125,13 +125,13 @@ Resources:
         Value: '/var/app/venv/staging-LQM1lest/bin'
 
       #SolutionStackName: "64bit Amazon Linux 2 v3.2.5 running Corretto 8"
-      SolutionStackName: "64bit Amazon Linux 2 v3.3.7 running Python 3.8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.3.8 running Python 3.8"
 
   MLServerEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       # let's give it a name
-      EnvironmentName: "beanstalk-mlserver-dev"
+      EnvironmentName: "beanstalk-mlserver-varenvname"
       ApplicationName:
         Ref: MLServerApplication
       Description: AWS ElasticBeanstalk MLServer Environment

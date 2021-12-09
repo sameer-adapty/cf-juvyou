@@ -3,19 +3,19 @@ AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
   NLBArnNumber:
     Type: String
-    Description: Provide ARN  for the Load balancer created for Config server
+    Description: Provide ARN  for the Load balancer created for Recommendation server
 Resources:
     MyVpcLink:
         Type: AWS::ApiGateway::VpcLink
         Properties:
-            Description: "config sever vpclink"
-            Name: "apilink-configserver-varenvname"
+            Description: "recommendation sever vpclink"
+            Name: "apilink-recoserver-varenvname"
             TargetArns:
                - !Ref NLBArnNumber
                
 Outputs:
-  jyapigatewayvpclinkconfserver:
+  jyapigatewayvpclinkrecoserver:
     Description: Logic id for the vpclink config server
     Value: !Ref MyVpcLink
     Export: 
-      Name: jy-vpclink-confserver-varenvname
+      Name: jy-vpclink-recoserver-varenvname

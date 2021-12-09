@@ -245,7 +245,7 @@ Resources:
                   - "REGIONAL"
             MutualTlsAuthentication:
                 #TruststoreUri: "s3://app-setup/truststore-dev/root-ca-dev-bundle02.txt"
-                TruststoreUri: !Sub "jy-cf-setup-api-truststore-${AWS::Region}/root-ca-bundle.txt"
+                TruststoreUri: !Sub "s3://jy-cf-setup-api-truststore-${AWS::Region}/root-ca-bundle.txt"
             SecurityPolicy: "TLS_1_2"
             RegionalCertificateArn: !Ref RegionCertARN
 

@@ -181,7 +181,7 @@ Resources:
         Value: '/usr/local/apache-maven'
 
 
-      SolutionStackName: "64bit Amazon Linux 2 v3.2.7 running Corretto 8"
+      SolutionStackName: "64bit Amazon Linux 2 v3.2.8 running Corretto 8"
       # SolutionStackName: "64bit Amazon Linux 2 v3.3.5 running Python 3.8"
 
   APIServerEnvironment:
